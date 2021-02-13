@@ -42,6 +42,8 @@ services:
       KEYCLOAK_PASSWORD: adminpass
       # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
       #JDBC_PARAMS: "ssl=true"
+    volumes:
+      - ./export:/tmp
     ports:
       - 7003:8080
     depends_on:

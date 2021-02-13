@@ -37,6 +37,12 @@ password: secret
     db: keycloak
     user: admin
     password: secret
+	
+	
+docker-compose down
+docker volume ls
+docker volume rm keycloak_db-data
+docker-compose up
 
 
 master user: d247feda-a03d-4b5e-84f0-e5e87a04c3e7
@@ -50,3 +56,79 @@ https://stackoverflow.com/questions/53538100/how-to-get-client-secret-via-keyclo
 https://stackoverflow.com/questions/53372454/refresh-token-with-keycloak
 
 https://stackoverflow.com/questions/60051209/add-claims-to-access-token-keycloak
+
+
+Export: import
+https://stackoverflow.com/questions/48930281/export-all-users-from-keycloak
+https://stackoverflow.com/questions/60766292/how-to-get-keycloak-to-export-realm-users-and-then-exit
+https://github.com/keycloak/keycloak-documentation/blob/master/server_admin/topics/export-import.adoc
+https://keycloak.discourse.group/t/keycloak-setting-up-with-mysql/2443/2
+
+------------------------------------------------------- Export--------------------------------------------------
+
+/opt/jboss/keycloak/bin/standalone.sh \
+	-Djboss.socket.binding.port-offset=99 \
+	-Dkeycloak.migration.action=export \
+	-Dkeycloak.migration.provider=singleFile \
+	-Dkeycloak.migration.file=/tmp/singlefile/export.json \
+
+/opt/jboss/keycloak/bin/standalone.sh \
+	-Djboss.socket.binding.port-offset=99 \
+	-Dkeycloak.migration.action=export \
+	-Dkeycloak.migration.provider=dir \
+	-Dkeycloak.migration.dir=/tmp/dir \
+
+
+-------- selected realm
+
+/opt/jboss/keycloak/bin/standalone.sh \
+	-Djboss.socket.binding.port-offset=99 \
+	-Dkeycloak.migration.action=export \
+	-Dkeycloak.migration.provider=singleFile \
+	-Dkeycloak.migration.file=/tmp/singlefile/export.json \
+	-Dkeycloak.migration.realmName=dev
+
+/opt/jboss/keycloak/bin/standalone.sh \
+	-Djboss.socket.binding.port-offset=99 \
+	-Dkeycloak.migration.action=export \
+	-Dkeycloak.migration.provider=dir \
+	-Dkeycloak.migration.dir=/tmp/dir \
+	-Dkeycloak.migration.realmName=dev
+	
+----------------------------------------------------- import -----------------------------------------------------
+IGNORE_EXISTING
+OVERWRITE_EXISTING
+
+
+/opt/jboss/keycloak/bin/standalone.sh \
+	-Djboss.socket.binding.port-offset=99 \
+	-Dkeycloak.migration.action=import \
+	-Dkeycloak.migration.provider=singleFile \
+	-Dkeycloak.migration.file=/tmp/singlefile/export.json \
+	-Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+		
+/opt/jboss/keycloak/bin/standalone.sh \
+	-Djboss.socket.binding.port-offset=99 \
+	-Dkeycloak.migration.action=import \
+	-Dkeycloak.migration.provider=dir \
+	-Dkeycloak.migration.dir=/tmp/dir \
+	-Dkeycloak.migration.strategy=OVERWRITE_EXISTING	
+
+-------- selected realm
+
+/opt/jboss/keycloak/bin/standalone.sh \
+	-Djboss.socket.binding.port-offset=99 \
+	-Dkeycloak.migration.action=import \
+	-Dkeycloak.migration.provider=singleFile \
+	-Dkeycloak.migration.file=/tmp/singlefile/export.json \
+	-Dkeycloak.migration.strategy=OVERWRITE_EXISTING \
+	-Dkeycloak.migration.realmName=dev
+		
+/opt/jboss/keycloak/bin/standalone.sh \
+	-Djboss.socket.binding.port-offset=99 \
+	-Dkeycloak.migration.action=import \
+	-Dkeycloak.migration.provider=dir \
+	-Dkeycloak.migration.dir=/tmp/dir \
+	-Dkeycloak.migration.strategy=OVERWRITE_EXISTING \
+	-Dkeycloak.migration.realmName=dev	
+	
